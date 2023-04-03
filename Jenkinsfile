@@ -13,26 +13,16 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t S13101997/devops-integration .'
+                    sh 'docker build -t shrutz/devops-integration .'
                 }
             }
         }
-        stage('Push image to Hub'){
-            steps{
-                script{
-                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                   sh 'docker login -u javatechie -p ${dockerhubpwd}'
-
-}
-                   sh 'docker push devopsauto/devops-integration'
+        stage('Push Image'){
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerpwd')]) {
+                    sh 'docker login -u shrutz -p ${dockerpwd}'
                 }
-            }
-        }
-        stage('Deploy to k8s'){
-            steps{
-                script{
-                    kubernetesDeploy (configs: 'deploymentservice.yaml',kubeconfigId: 'k8sconfigpwd')
-                }
+                sh 'docker push shrutz/devops-integration'
             }
         }
     }
