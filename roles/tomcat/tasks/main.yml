@@ -1,0 +1,72 @@
+---
+- name: Update APT package manager repositories cache
+  apt:
+        update_cache: yes
+- name: Install Java using Ansible
+  apt:
+        name: openjdk-11-jdk
+        state: present
+
+- name: Install required system packages
+  apt:
+        pkg:
+          #- apt-transport-https
+          #- ca-certificates
+          #- curl
+          #- software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+- name: Install Python
+  apt:
+    name: "python3"
+    state: present
+
+- name: Add Docker GPG apt Key
+  apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+- name: Add Docker Repository
+  apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+- name: Update apt and install docker-ce
+  apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+- name: Install Docker Module for Python
+  pip:
+        name: docker
+    
+- name: Start Docker service
+  service:
+    name: "docker"
+    state: started
+    
+- name: webpage directory
+  file:
+    state: directory
+    dest: "/root/webpage"
+    
+- name: Pull docker image
+  docker_image:
+    name: shrutz/devops-integration
+    tag: latest
+    source: pull
+    
+- name: Run docker container
+  docker_container:
+      name: application
+      image: shrutz/devops-integration:latest
+      state: started
+      exposed_ports:
+      - "8080"
+      ports:
+      - "8080:8080"
