@@ -17,6 +17,16 @@ pipeline {
                 }
             }
         }
+        stage('Test-Maven'){
+            steps{
+                sh 'mvn test'
+            }
+            post{
+                always{
+                    junit 'target/test-reports/*.xml'
+                }
+            }
+        }
         stage('Push Image'){
             steps {
                 withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerpwd')]) {
@@ -26,12 +36,4 @@ pipeline {
             }
         }
     }
-    post {
-       always {
-          junit(
-               allowEmptyResults: true,
-               testResults: '*/test-reports/.xml'
-            )
-      }
-   }
 }
