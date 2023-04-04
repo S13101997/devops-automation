@@ -10,13 +10,6 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t shrutz/devops-integration .'
-                }
-            }
-        }
         stage('Test-Maven'){
             steps{
                 sh 'mvn test'
@@ -24,6 +17,13 @@ pipeline {
             post{
                 always{
                     junit 'target/test-reports/*.xml'
+                }
+            }
+        }
+        stage('Build docker image'){
+            steps{
+                script{
+                    sh 'docker build -t shrutz/devops-integration .'
                 }
             }
         }
